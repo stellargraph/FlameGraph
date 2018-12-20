@@ -375,7 +375,9 @@ sub color {
 	}
 
 	# multi palettes
-	if (defined $type and $type eq "java") {
+	my $is_stellar = $type eq "stellar";
+	# Handle both annotations (_[j], _[i], ...; which are
+	if (defined $type and ($type eq "java" or $is_stellar)) {
 		# Handle both annotations (_[j], _[i], ...; which are
 		# accurate), as well as input that lacks any annotations, as
 		# best as possible. Without annotations, we get a little hacky
@@ -392,6 +394,12 @@ sub color {
 			$type = "yellow";
 		} else {			# system
 			$type = "red";
+		}
+
+		if ($is_stellar and $name =~ m:stellargraph:) {
+			$type = "blue";
+		} elsif ($is_stellar and $name =~ m:deeplearning4j:) {
+			$type = "gray";
 		}
 		# fall-through to color palettes
 	}
@@ -482,6 +490,10 @@ sub color {
 		my $r = 190 + int(65 * $v1);
 		my $g = 90 + int(65 * $v1);
 		return "rgb($r,$g,0)";
+	}
+	if (defined $type and $type eq "gray") {
+		my $r = 140 + int(55 * $v1);
+		return "rgb($r,$r,$r)";
 	}
 
 	return "rgb(0,0,0)";
